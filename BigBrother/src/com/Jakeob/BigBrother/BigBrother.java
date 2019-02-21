@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * TODO:
  * Create BlockListener and allow it to log changes
+ * Don't forget to add BlockExplodeEvent
  * 
  * Initialize CommandParser
  * Create following commands:
@@ -43,11 +44,8 @@ public class BigBrother extends JavaPlugin{
 		String database = this.getConfig().getString("MySQL.Database");
 		
 		SQLHandler sqlh = new SQLHandler(host, port, user, password, database);
-		if(sqlh.isConnected()) {
-			this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
-		}else {
-			this.setEnabled(false);
-		}
+		
+		this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
 	}
 	
 	public void onDisable() {

@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
 
 public class SQLHandler {
 	private String host;
@@ -26,12 +31,34 @@ public class SQLHandler {
 	
 	private void connect() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");  
 			this.connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 			Statement statement = this.connection.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS `BBLog` (`Player` VARCHAR(50), `Time` DATETIME, `Reason` VARCHAR(50), `BlockType` VARCHAR(50), `X` INT, `Y` INT, `Z` INT)");
+			String createTable = "CREATE TABLE IF NOT EXISTS `BBLog` (`Player` VARCHAR(50), `Time` DATETIME, `BlockType` VARCHAR(50), `World` VARCHAR(50), `X` INT, `Y` INT, `Z` INT)";
+			statement.execute(createTable);
 		} catch (Exception e) {
 			BigBrother.logger.warning("Couldn't connect to database, make sure Big Brother config is correct!");
+		}
+	}
+	
+	public void addEntry(String playerName, Material type, Location loc) {
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		String time = sdf.format(date);
+		String blockType = type.toString();
+		String world = loc.getWorld().getName();
+		int x = loc.getBlockX();
+		int y = loc.getBlockY();
+		int z = loc.getBlockZ();
+		
+		String values = "'" + playerName + "', '" + time + "', '" + blockType + "', '" + world + "', '" + x + "', '" + y + "', '" + z + "'";
+		
+		try {
+			Statement statement = this.connection.createStatement();
+			String entry = "INSERT INTO `BBLog` (`Player`, `Time`, `BlockType`, `World`, `X`, `Y`, `Z`) VALUES (" + values + ")";
+			statement.execute(entry);
+		} catch (SQLException e) {
+			BigBrother.logger.warning("Encountered problem adding entry to server!");
 		}
 	}
 	
