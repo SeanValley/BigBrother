@@ -1,5 +1,7 @@
 package com.Jakeob.BigBrother;
 
+import java.util.logging.Logger;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,13 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Github: github.com/SeanValley
  * 
  * TODO:
- * Read config
- * Establish connection to database
- * 
- * Initialize CommandParser
- * 
  * Create BlockListener and allow it to log changes
  * 
+ * Initialize CommandParser
  * Create following commands:
  *   bb - shows player help for Big Brother
  *   bb help - shows player help for Big Brother
@@ -31,9 +29,25 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 
 public class BigBrother extends JavaPlugin{
+	public static Logger logger = null;
 	
 	public void onEnable() {
-		this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
+		logger = this.getServer().getLogger();
+		
+		loadConfiguration();
+
+		String host = this.getConfig().getString("MySQL.Host");
+		String port = this.getConfig().getString("MySQL.Port");
+		String user = this.getConfig().getString("MySQL.User");
+		String password = this.getConfig().getString("MySQL.Password");
+		String database = this.getConfig().getString("MySQL.Database");
+		
+		SQLHandler sqlh = new SQLHandler(host, port, user, password, database);
+		if(sqlh.isConnected()) {
+			this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
+		}else {
+			this.setEnabled(false);
+		}
 	}
 	
 	public void onDisable() {
