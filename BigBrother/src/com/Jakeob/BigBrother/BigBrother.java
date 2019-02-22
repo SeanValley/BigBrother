@@ -12,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Github: github.com/SeanValley
  * 
  * TODO:
+ * Change database to store whether it was placed or destroyed
  * Create BlockListener and allow it to log changes
  * Don't forget to add BlockExplodeEvent
  * 
