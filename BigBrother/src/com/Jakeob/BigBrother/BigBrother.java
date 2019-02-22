@@ -13,8 +13,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Github: github.com/SeanValley
  * 
  * TODO:
- * Make BlockExplodeEvent work
- * 
  * Initialize CommandParser
  * Create following commands:
  *   bb - shows player help for Big Brother

@@ -17,6 +17,7 @@ public class SQLHandler {
 	private String password;
 	private String database;
 	
+	private SQLSender sqls;
 	private Connection connection;
 	
 	public SQLHandler(String host, String port, String user, String password, String database) {
@@ -27,6 +28,9 @@ public class SQLHandler {
 		this.database = database;
 		
 		connect();
+		sqls = new SQLSender(this.connection);
+		Thread queryThread = new Thread(sqls);
+		queryThread.start();
 	}
 	
 	private void connect() {
@@ -41,7 +45,11 @@ public class SQLHandler {
 		}
 	}
 	
-	public void addEntry(String playerName, String event, Material type, Location loc) {
+	public void addEntry(String entry) {
+		sqls.addQuery(entry);
+	}
+	
+	public static String getInsertStatement(String playerName, String event, Material type, Location loc) {
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
@@ -54,13 +62,7 @@ public class SQLHandler {
 		
 		String values = "'" + playerName + "', '" + time + "', '" + event + "', '" + blockType + "', '" + world + "', '" + x + "', '" + y + "', '" + z + "'";
 		
-		try {
-			Statement statement = this.connection.createStatement();
-			String entry = "INSERT INTO `BBLog` (`Player`, `Time`, `Event`, `BlockType`, `World`, `X`, `Y`, `Z`) VALUES (" + values + ")";
-			statement.execute(entry);
-		} catch (SQLException e) {
-			BigBrother.logger.warning("Encountered problem adding entry to server!");
-		}
+		return "INSERT INTO `BBLog` (`Player`, `Time`, `Event`, `BlockType`, `World`, `X`, `Y`, `Z`) VALUES (" + values + ")";
 	}
 	
 	public boolean isConnected() {
