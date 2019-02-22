@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -61,6 +62,35 @@ public class BigBrother extends JavaPlugin{
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		return true;
+		if(cmd.getName().equalsIgnoreCase("bb")) {
+			Player player = null;
+			if(sender instanceof Player) {
+				player = (Player) sender;
+			}
+			
+			if(args.length == 0) {
+				CommandHandler.help(player);
+			}else if(args[0].equalsIgnoreCase("log")) {
+				CommandHandler.log(player);
+			}else if(args[0].equalsIgnoreCase("undo")) {
+				CommandHandler.undo(player);
+			}else if(args[0].equalsIgnoreCase("history")) {
+				String[] newArgs = new String[args.length - 1];
+				for(int i=1;i<args.length;i++) {
+					newArgs[i - 1] = args[i];
+				}
+				CommandHandler.history(player, newArgs);
+			}else if(args[0].equalsIgnoreCase("rollback")) {
+				String[] newArgs = new String[args.length - 1];
+				for(int i=1;i<args.length;i++) {
+					newArgs[i - 1] = args[i];
+				}
+				CommandHandler.history(player, newArgs);
+			}else {
+				CommandHandler.help(player);
+			}
+			return true;
+		}
+		return false;
 	}
 }

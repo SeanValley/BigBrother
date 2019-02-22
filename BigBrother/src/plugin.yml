@@ -1,3 +1,7 @@
 name: BigBrother
 main: com.Jakeob.BigBrother.BigBrother
 version: 1.0
+commands:
+   bb:
+      description: Gets list of Big Brother commands
+      usage: Usage /<command>
