@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /*
@@ -12,9 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Github: github.com/SeanValley
  * 
  * TODO:
- * Change database to store whether it was placed or destroyed
- * Create BlockListener and allow it to log changes
- * Don't forget to add BlockExplodeEvent
+ * Make BlockExplodeEvent work
  * 
  * Initialize CommandParser
  * Create following commands:
@@ -35,6 +34,7 @@ public class BigBrother extends JavaPlugin{
 	
 	public void onEnable() {
 		logger = this.getServer().getLogger();
+		PluginManager pm = this.getServer().getPluginManager();
 		
 		loadConfiguration();
 
@@ -45,6 +45,8 @@ public class BigBrother extends JavaPlugin{
 		String database = this.getConfig().getString("MySQL.Database");
 		
 		SQLHandler sqlh = new SQLHandler(host, port, user, password, database);
+		
+		pm.registerEvents(new BlockListener(sqlh), this);
 		
 		this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
 	}

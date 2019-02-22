@@ -35,6 +35,7 @@ public class SQLHandler {
 			Statement statement = this.connection.createStatement();
 			String createTable = "CREATE TABLE IF NOT EXISTS `BBLog` (`Player` VARCHAR(50), `Time` DATETIME, `Event` VARCHAR(50), `BlockType` VARCHAR(50), `World` VARCHAR(50), `X` INT, `Y` INT, `Z` INT)";
 			statement.execute(createTable);
+			BigBrother.logger.info("Connected to database!");
 		} catch (Exception e) {
 			BigBrother.logger.warning("Couldn't connect to database, make sure Big Brother config is correct!");
 		}
@@ -51,7 +52,7 @@ public class SQLHandler {
 		int y = loc.getBlockY();
 		int z = loc.getBlockZ();
 		
-		String values = "'" + playerName + "', '" + event + "', '" + time + "', '" + blockType + "', '" + world + "', '" + x + "', '" + y + "', '" + z + "'";
+		String values = "'" + playerName + "', '" + time + "', '" + event + "', '" + blockType + "', '" + world + "', '" + x + "', '" + y + "', '" + z + "'";
 		
 		try {
 			Statement statement = this.connection.createStatement();
