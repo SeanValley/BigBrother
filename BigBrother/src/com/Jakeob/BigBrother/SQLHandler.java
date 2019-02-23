@@ -2,6 +2,7 @@ package com.Jakeob.BigBrother;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
@@ -63,6 +64,20 @@ public class SQLHandler {
 		String values = "'" + playerName + "', '" + time + "', '" + event + "', '" + blockType + "', '" + world + "', '" + x + "', '" + y + "', '" + z + "'";
 		
 		return "INSERT INTO `BBLog` (`Player`, `Time`, `Event`, `BlockType`, `World`, `X`, `Y`, `Z`) VALUES (" + values + ")";
+	}
+	
+	public ResultSet getResultSet(String world, int x, int y, int z) {
+		ResultSet resultSet = null;
+		
+		try {
+			Statement statement = this.connection.createStatement();
+			String selectStatement = "SELECT * FROM `BBLog` WHERE World = '" + world + "' AND X = " + x + " AND Y = " + y + " AND Z = " + z + ";";
+			resultSet = statement.executeQuery(selectStatement);
+		}catch (Exception exception) {
+			BigBrother.logger.warning("Problem grabbing result set!");
+		}
+		
+		return resultSet;
 	}
 	
 	public boolean isConnected() {
