@@ -1,6 +1,7 @@
 name: BigBrother
 main: com.Jakeob.BigBrother.BigBrother
 version: 1.0
+api-version: 1.13
 commands:
    bb:
       description: Gets list of Big Brother commands

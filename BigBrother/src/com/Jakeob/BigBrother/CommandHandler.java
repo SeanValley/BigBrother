@@ -2,6 +2,7 @@ package com.Jakeob.BigBrother;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public class CommandHandler {
 	
@@ -27,7 +28,18 @@ public class CommandHandler {
 		if(player == null) {
 			BigBrother.logger.info(ChatColor.RED + "This command is only useable by players!");
 		}else {
-			//TODO: Give player log tool
+			Inventory inv = player.getInventory();
+			if(!CommandHelper.hasLogTool(inv)) {
+				if(CommandHelper.hasEmptySlot(inv)) {
+					CommandHelper.giveLogTool(player);
+					player.sendMessage(ChatColor.GREEN + "You have received the log tool!");
+				}else {
+					player.sendMessage(ChatColor.RED + "You don't have enough room in your inventory!");
+				}
+			}else {
+				CommandHelper.removeLogTool(player);
+				player.sendMessage(ChatColor.GREEN + "The log tool has been removed from your inventory!");
+			}
 		}
 	}
 	
