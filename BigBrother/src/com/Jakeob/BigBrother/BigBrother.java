@@ -14,22 +14,22 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Github: github.com/SeanValley
  * 
  * TODO:
- * Initialize CommandParser
  * Create following commands:
- *   bb - shows player help for Big Brother
- *   bb help - shows player help for Big Brother
- *   bb log - gives player log tool or removes it if they already have it
- *   bb history - gives player block change history based on parameters supplied
  *   bb rollback - rolls back changes based on parameters supplied by player
  *   bb undo - undoes roll backs made by player
  *   
  * Create permissions for various commands
+ * 
+ * Add pages to scroll through ResultSets
+ * Have SELECT queries run on separate thread
  * 
  * Allow plugin to hook into WorldEdit for extra control
  */
 
 public class BigBrother extends JavaPlugin{
 	public static Logger logger = null;
+	
+	private CommandHandler cHandler;
 	
 	public void onEnable() {
 		logger = this.getServer().getLogger();
@@ -46,6 +46,8 @@ public class BigBrother extends JavaPlugin{
 		SQLHandler sqlh = new SQLHandler(host, port, user, password, database);
 		
 		pm.registerEvents(new BlockListener(sqlh), this);
+		
+		this.cHandler = new CommandHandler(sqlh);
 		
 		this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
 	}
@@ -69,25 +71,25 @@ public class BigBrother extends JavaPlugin{
 			}
 			
 			if(args.length == 0) {
-				CommandHandler.help(player);
+				this.cHandler.help(player);
 			}else if(args[0].equalsIgnoreCase("log")) {
-				CommandHandler.log(player);
+				this.cHandler.log(player);
 			}else if(args[0].equalsIgnoreCase("undo")) {
-				CommandHandler.undo(player);
+				this.cHandler.undo(player);
 			}else if(args[0].equalsIgnoreCase("history")) {
 				String[] newArgs = new String[args.length - 1];
 				for(int i=1;i<args.length;i++) {
 					newArgs[i - 1] = args[i];
 				}
-				CommandHandler.history(player, newArgs);
+				this.cHandler.history(player, newArgs);
 			}else if(args[0].equalsIgnoreCase("rollback")) {
 				String[] newArgs = new String[args.length - 1];
 				for(int i=1;i<args.length;i++) {
 					newArgs[i - 1] = args[i];
 				}
-				CommandHandler.history(player, newArgs);
+				this.cHandler.history(player, newArgs);
 			}else {
-				CommandHandler.help(player);
+				this.cHandler.help(player);
 			}
 			return true;
 		}

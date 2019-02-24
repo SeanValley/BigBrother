@@ -80,6 +80,21 @@ public class SQLHandler {
 		return resultSet;
 	}
 	
+	public ResultSet getResultSet(String conditions) {
+		ResultSet resultSet = null;
+		
+		try {
+			Statement statement = this.connection.createStatement();
+			String selectStatement = "SELECT * FROM `BBLog` WHERE " + conditions +  ";";
+			BigBrother.logger.info(selectStatement);
+			resultSet = statement.executeQuery(selectStatement);
+		}catch (Exception exception) {
+			BigBrother.logger.warning("Problem grabbing result set!");
+		}
+		
+		return resultSet;
+	}
+	
 	public boolean isConnected() {
 		try {
 			return !connection.isClosed();
