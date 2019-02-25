@@ -29,45 +29,56 @@ public class BlockListener implements Listener{
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if(event.getItemInHand().getItemMeta().getDisplayName().equals(ChatColor.BLUE + "BBLog")) {
-			event.setCancelled(true);
-			
-			String world = event.getBlock().getWorld().getName();
-			int x = event.getBlock().getX();
-			int y = event.getBlock().getY();
-			int z = event.getBlock().getZ();
-			
-			ResultSet resultSet = sqlh.getResultSet(world, x, y, z);
 			Player player = event.getPlayer();
-			boolean hadResults = false;
+			boolean hasPermission = true;
 			
-			player.sendMessage("-- (" + ChatColor.YELLOW + x + "," + y + "," + z + ChatColor.WHITE + ") --");
-			try {
-				while(resultSet.next()) {
-					hadResults = true;
-					Timestamp timestamp = resultSet.getTimestamp("Time");
-					Date date = new Date(timestamp.getTime());
-					
-					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					String time = sdf.format(date);
-					
-					String playerName = resultSet.getString("Player");
-					String eventType = resultSet.getString("Event");
-					if(eventType.equals("placed")) {
-						eventType = ChatColor.GREEN + eventType;
-					}else {
-						eventType = ChatColor.RED + eventType;
-					}
-					String blockType = resultSet.getString("BlockType");
-					
-					String result = "[" + ChatColor.YELLOW + time + ChatColor.WHITE + "] " + playerName + " " + eventType + " " + ChatColor.WHITE + blockType;
-					player.sendMessage(result);
-				}
-			} catch (SQLException e) {
-				BigBrother.logger.warning("Problem grabbing results with log tool!");
+			hasPermission = player.isOp();
+			if(!hasPermission) {
+				hasPermission = player.hasPermission("bb.use");
 			}
 			
-			if(!hadResults) {
-				player.sendMessage(ChatColor.RED + "No Results Found");
+			if(hasPermission) {
+				event.setCancelled(true);
+				
+				String world = event.getBlock().getWorld().getName();
+				int x = event.getBlock().getX();
+				int y = event.getBlock().getY();
+				int z = event.getBlock().getZ();
+				
+				ResultSet resultSet = sqlh.getResultSet(world, x, y, z);
+				boolean hadResults = false;
+				
+				player.sendMessage("-- (" + ChatColor.YELLOW + x + "," + y + "," + z + ChatColor.WHITE + ") --");
+				try {
+					while(resultSet.next()) {
+						hadResults = true;
+						Timestamp timestamp = resultSet.getTimestamp("Time");
+						Date date = new Date(timestamp.getTime());
+						
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						String time = sdf.format(date);
+						
+						String playerName = resultSet.getString("Player");
+						String eventType = resultSet.getString("Event");
+						if(eventType.equals("placed")) {
+							eventType = ChatColor.GREEN + eventType;
+						}else {
+							eventType = ChatColor.RED + eventType;
+						}
+						String blockType = resultSet.getString("BlockType");
+						
+						String result = "[" + ChatColor.YELLOW + time + ChatColor.WHITE + "] " + playerName + " " + eventType + " " + ChatColor.WHITE + blockType;
+						player.sendMessage(result);
+					}
+				} catch (SQLException e) {
+					BigBrother.logger.warning("Problem grabbing results with log tool!");
+				}
+				
+				if(!hadResults) {
+					player.sendMessage(ChatColor.RED + "No Results Found");
+				}
+			}else {
+				player.sendMessage(ChatColor.RED + "You don't have permission to use this tool!");
 			}
 		}else {
 			String playerName = event.getPlayer().getDisplayName();

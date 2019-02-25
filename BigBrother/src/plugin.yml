@@ -6,3 +6,6 @@ commands:
    bb:
       description: Gets list of Big Brother commands
       usage: Usage /<command>
+permissions:
+  bb.use:
+    description: Gives access to all Big Brother commands

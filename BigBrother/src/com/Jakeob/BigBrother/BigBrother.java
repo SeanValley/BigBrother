@@ -15,13 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * TODO:
  * Create following commands:
- *   bb rollback - rolls back changes based on parameters supplied by player
  *   bb undo - undoes roll backs made by player
- *   
- * Create permissions for various commands
  * 
  * Add pages to scroll through ResultSets
- * Have SELECT queries run on separate thread
  * Clean up CommandParser class
  * 
  * Allow plugin to hook into WorldEdit for extra control
@@ -67,30 +63,35 @@ public class BigBrother extends JavaPlugin{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(cmd.getName().equalsIgnoreCase("bb")) {
 			Player player = null;
+			boolean hasPermission = true;
 			if(sender instanceof Player) {
 				player = (Player) sender;
+				hasPermission = player.isOp();
+				if(!hasPermission) {
+					hasPermission = player.hasPermission("bb.use");
+				}
 			}
 			
 			if(args.length == 0) {
-				this.cHandler.help(player);
+				this.cHandler.help(player, hasPermission);
 			}else if(args[0].equalsIgnoreCase("log")) {
-				this.cHandler.log(player);
+				this.cHandler.log(player, hasPermission);
 			}else if(args[0].equalsIgnoreCase("undo")) {
-				this.cHandler.undo(player);
+				this.cHandler.undo(player, hasPermission);
 			}else if(args[0].equalsIgnoreCase("history")) {
 				String[] newArgs = new String[args.length - 1];
 				for(int i=1;i<args.length;i++) {
 					newArgs[i - 1] = args[i];
 				}
-				this.cHandler.history(player, newArgs);
+				this.cHandler.history(player, newArgs, hasPermission);
 			}else if(args[0].equalsIgnoreCase("rollback")) {
 				String[] newArgs = new String[args.length - 1];
 				for(int i=1;i<args.length;i++) {
 					newArgs[i - 1] = args[i];
 				}
-				this.cHandler.rollback(player, newArgs);
+				this.cHandler.rollback(player, newArgs, hasPermission);
 			}else {
-				this.cHandler.help(player);
+				this.cHandler.help(player, hasPermission);
 			}
 			return true;
 		}
