@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -61,5 +62,13 @@ public class CommandHelper {
 				}
 			}
 		}
+	}
+	
+	public static void removeBlock(Location loc) {
+		loc.getBlock().setType(Material.AIR);
+	}
+	
+	public static void placeBlock(Location loc, Material type) {
+		loc.getBlock().setType(type);
 	}
 }

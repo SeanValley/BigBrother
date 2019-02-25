@@ -22,6 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * Add pages to scroll through ResultSets
  * Have SELECT queries run on separate thread
+ * Clean up CommandParser class
  * 
  * Allow plugin to hook into WorldEdit for extra control
  */
@@ -47,7 +48,7 @@ public class BigBrother extends JavaPlugin{
 		
 		pm.registerEvents(new BlockListener(sqlh), this);
 		
-		this.cHandler = new CommandHandler(sqlh);
+		this.cHandler = new CommandHandler(this, sqlh);
 		
 		this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
 	}
@@ -87,7 +88,7 @@ public class BigBrother extends JavaPlugin{
 				for(int i=1;i<args.length;i++) {
 					newArgs[i - 1] = args[i];
 				}
-				this.cHandler.history(player, newArgs);
+				this.cHandler.rollback(player, newArgs);
 			}else {
 				this.cHandler.help(player);
 			}

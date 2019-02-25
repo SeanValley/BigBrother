@@ -86,7 +86,6 @@ public class SQLHandler {
 		try {
 			Statement statement = this.connection.createStatement();
 			String selectStatement = "SELECT * FROM `BBLog` WHERE " + conditions +  ";";
-			BigBrother.logger.info(selectStatement);
 			resultSet = statement.executeQuery(selectStatement);
 		}catch (Exception exception) {
 			BigBrother.logger.warning("Problem grabbing result set!");
