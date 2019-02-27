@@ -4,7 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,7 +14,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import com.Jakeob.BigBrother.Rollbacks.Action;
+import com.Jakeob.BigBrother.Rollbacks.Rollback;
+
 public class CommandHandler {
+	public static HashMap<String, ArrayList<Rollback>> rollbacks = new HashMap<String, ArrayList<Rollback>>();
+	
 	private BigBrother plugin;
 	private SQLHandler sqlh;
 	
@@ -132,6 +139,7 @@ public class CommandHandler {
 					boolean hadResults = false;
 					
 					try {
+						ArrayList<Action> actions = new ArrayList<Action>();
 						int amount = 0;
 						while(resultSet.next()) {
 							hadResults = true;
@@ -140,6 +148,8 @@ public class CommandHandler {
 							
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							String time = sdf.format(date);
+							
+							String playerName = resultSet.getString("Player");
 							
 							String blockType = resultSet.getString("BlockType");
 							Material type = Material.valueOf(blockType);
@@ -152,10 +162,17 @@ public class CommandHandler {
 							Location loc = new Location(plugin.getServer().getWorld(world), x, y, z);
 							
 							String event = resultSet.getString("Event");
+							
+							boolean wasRemoved = true;
 							if(event.equals("placed")) {
+								wasRemoved = false;
 								CommandHelper.removeBlock(loc);
+								Action action = new Action(playerName, time, wasRemoved, blockType, world, x, y, z);
+								actions.add(action);
 							}else {
 								CommandHelper.placeBlock(loc, type);
+								Action action = new Action(playerName, time, wasRemoved, blockType, world, x, y, z);
+								actions.add(action);
 							}
 							
 							String delete = "DELETE FROM `BBLog` WHERE Time = '" + time + "' AND BlockType = '" + type
@@ -167,6 +184,15 @@ public class CommandHandler {
 						if(!hadResults) {
 							player.sendMessage(ChatColor.RED + "Nothing found under those parameters");
 						}else {
+							Rollback rollback = new Rollback(actions);
+							ArrayList<Rollback> playerRollbacks = rollbacks.get(player.getName());
+							if(playerRollbacks != null) {
+								rollbacks.get(player.getName()).add(rollback);
+							}else {
+								ArrayList<Rollback> newRollbacks = new ArrayList<Rollback>();
+								newRollbacks.add(rollback);
+								rollbacks.put(player.getName(), newRollbacks);
+							}
 							player.sendMessage(ChatColor.GREEN + "Rolled back " + amount + " actions!");
 						}
 					} catch (SQLException e) {
@@ -186,7 +212,41 @@ public class CommandHandler {
 			if(player == null) {
 				BigBrother.logger.info(ChatColor.RED + "This command is only useable by players!");
 			}else {
-				//TODO: Undo recent rollback
+				String name = player.getName();
+				ArrayList<Rollback> playerRBs = rollbacks.get(name);
+				if(playerRBs != null) {
+					BigBrother.logger.info("Had rollbacks to make");
+					BigBrother.logger.info("rollback list size: " + rollbacks.get(name).size());
+					int rbsSize = playerRBs.size();
+					Rollback recentRB = playerRBs.get(rbsSize - 1);
+					for(Action action : recentRB.getAllActions()) {
+						String playerName = action.getPlayerName();
+						String time = action.getTime();
+						String blockType = action.getBlockType();
+						String world = action.getWorld();
+						int x = action.getX();
+						int y = action.getY();
+						int z = action.getZ();
+						
+						String event = "placed";
+						if(action.wasRemoved()) {
+							event = "removed";
+							CommandHelper.removeBlock(new Location(plugin.getServer().getWorld(world), x, y, z));
+						}else {
+							CommandHelper.placeBlock(new Location(plugin.getServer().getWorld(world), x, y, z), Material.getMaterial(blockType));
+						}
+						
+						String entry = SQLHandler.getInsertStatement(playerName, time, event, blockType, world, x, y, z);
+						sqlh.addEntry(entry);
+					}
+					
+					@SuppressWarnings("unchecked")
+					ArrayList<Rollback> playerRollbacks = (ArrayList<Rollback>) rollbacks.get(name).clone();
+					playerRollbacks.remove(playerRollbacks.size() - 1);
+					rollbacks.put(name, playerRollbacks);
+				}else {
+					player.sendMessage(ChatColor.RED + "No rollbacks to undo");
+				}
 			}
 		}else {
 			player.sendMessage(ChatColor.RED + "You don't have permission for this command!");

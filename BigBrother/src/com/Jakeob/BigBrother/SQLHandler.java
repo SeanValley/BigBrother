@@ -66,6 +66,11 @@ public class SQLHandler {
 		return "INSERT INTO `BBLog` (`Player`, `Time`, `Event`, `BlockType`, `World`, `X`, `Y`, `Z`) VALUES (" + values + ")";
 	}
 	
+	public static String getInsertStatement(String playerName, String time, String event, String blockType, String world, int x, int y, int z) {
+		String values = "'" + playerName + "', '" + time + "', '" + event + "', '" + blockType + "', '" + world + "', '" + x + "', '" + y + "', '" + z + "'";;
+		return "INSERT INTO `BBLog` (`Player`, `Time`, `Event`, `BlockType`, `World`, `X`, `Y`, `Z`) VALUES (" + values + ")";
+	}
+	
 	public ResultSet getResultSet(String world, int x, int y, int z) {
 		ResultSet resultSet = null;
 		
@@ -87,6 +92,7 @@ public class SQLHandler {
 			Statement statement = this.connection.createStatement();
 			String selectStatement = "SELECT * FROM `BBLog` WHERE " + conditions +  ";";
 			resultSet = statement.executeQuery(selectStatement);
+			BigBrother.logger.info(selectStatement);
 		}catch (Exception exception) {
 			BigBrother.logger.warning("Problem grabbing result set!");
 		}

@@ -18,10 +18,14 @@ public class SQLSender implements Runnable{
 	public void run() {
 		while(true) {
 			try {
-				TimeUnit.SECONDS.sleep(1);
+				TimeUnit.MILLISECONDS.sleep(5);
 				if(!connection.isClosed() && queries.size() > 0) {
 					Statement statement = this.connection.createStatement();
-					statement.execute(queries.get(0));
+					if(queries.get(0).contains("DELETE")) {
+						statement.executeUpdate(queries.get(0));
+					}else {
+						statement.execute(queries.get(0));
+					}
 					queries.remove(0);
 				}
 			} catch (Exception e) {

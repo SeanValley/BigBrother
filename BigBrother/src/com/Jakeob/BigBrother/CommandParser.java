@@ -146,9 +146,24 @@ public class CommandParser {
 					sqlMin -= mins;
 					sqlSec -= secs;
 					
+					if(sqlSec < 0) {
+						sqlMin -= 1;
+						sqlSec += 60;
+					}
+					
+					if(sqlMin < 0) {
+						sqlHour -= 1;
+						sqlMin += 60;
+					}
+					
+					if(sqlHour < 0) {
+						sqlDay -= 1;
+						sqlHour += 24;
+					}
+					
 					String checkDate = new SimpleDateFormat("yyyy-MM-").format(date) + sqlDay + " " + sqlHour + ":" + sqlMin + ":" + sqlSec;
 					conditionArray.add("Time >= '" + checkDate + "'");
-					BigBrother.logger.info("checkDate");
+					BigBrother.logger.info("Time >= '" + checkDate + "'");
 				}else {
 					return null;
 				}
