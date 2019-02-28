@@ -43,6 +43,7 @@ public class BigBrother extends JavaPlugin{
 		SQLHandler sqlh = new SQLHandler(host, port, user, password, database);
 		
 		pm.registerEvents(new BlockListener(sqlh), this);
+		pm.registerEvents(new PlayerListener(), this);
 		
 		this.cHandler = new CommandHandler(this, sqlh);
 		
