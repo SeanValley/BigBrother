@@ -14,12 +14,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Github: github.com/SeanValley
  * 
  * TODO:
- * Create following commands:
- *   bb undo - undoes roll backs made by player
- * 
  * Add pages to scroll through ResultSets
- * Clean up CommandParser class
+ * fix SQL problem with negative numbers
  * 
+ * Clean up CommandParser class
  * Allow plugin to hook into WorldEdit for extra control
  */
 
@@ -91,6 +89,12 @@ public class BigBrother extends JavaPlugin{
 					newArgs[i - 1] = args[i];
 				}
 				this.cHandler.rollback(player, newArgs, hasPermission);
+			}else if(args[0].equalsIgnoreCase("page")) {
+				String[] newArgs = new String[args.length - 1];
+				for(int i=1;i<args.length;i++) {
+					newArgs[i - 1] = args[i];
+				}
+				this.cHandler.page(player, newArgs, hasPermission);
 			}else {
 				this.cHandler.help(player, hasPermission);
 			}
