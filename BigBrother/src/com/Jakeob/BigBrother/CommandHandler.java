@@ -235,9 +235,12 @@ public class CommandHandler {
 								}
 							}
 						}else {
-							player.sendMessage(ChatColor.RED + "Please enter a page between 1 and " + sResults.getTotalPages());
+							if(sResults.getTotalPages() > 0) {
+								player.sendMessage(ChatColor.RED + "Please enter a page between 1 and " + sResults.getTotalPages());
+							}else {
+								player.sendMessage(ChatColor.RED + "There are no results to show");
+							}
 						}
-						
 					}catch(NumberFormatException e) {
 						player.sendMessage(ChatColor.RED + "Invalid page number!");
 					}
