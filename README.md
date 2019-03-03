@@ -6,6 +6,10 @@ For: Spigot 1.13.2
 
 This plugin is designed to log every broken/placed block into a MySQL database. Operators and/or people with permission are then able to check the history of changes for any location, player, or time. They can also rollback any unwanted block changes. It is meant to have servers allow their players complete freedom over where they build without having to designate locations for each player or use a town management plugin to protect players builds. The plugin is still in development and I am open to all suggestions for features or bug fixes! Just email me at valleydsean@gmail.com!
 
+How to use:
+
+Drag the BigBrother.jar into your plugins folder. After running the server with the plugin for the first time, a config folder will be generated where you can fill in the MySQL server information. Reloading or restarting the server after filling out the configuration will allow the plugin to run properly.
+
 Permissions:
 
 &nbsp;&nbsp;&nbsp;&nbsp;'bb.use' - Allows players to use Big Brother commands, use the log tool, and issue rollbacks
@@ -27,7 +31,7 @@ Commands:
   
 How to use Rollback and History commands:
 
-&nbsp;&nbsp;These commands take special arguments to find exactly what you're looking for. You must specify at least one of the arguments to get results but you can use a combination of 2 or even all 3. History and Rollback take the same argument and can be used interchangably.
+These commands take special arguments to find exactly what you're looking for. You must specify at least one of the arguments to get results but you can use a combination of 2 or even all 3. History and Rollback take the same argument and can be used interchangably.
   
   &nbsp;&nbsp;&nbsp;&nbsp;p:<playername> - Will give you the history of a specified player
   
@@ -47,4 +51,4 @@ How to use Rollback and History commands:
   
   &nbsp;&nbsp;&nbsp;&nbsp;/bb rollback t:1h
   
-  &nbsp;&nbsp;&nbsp;&nbsp;This will rollback blocks within after an hour ago
+  &nbsp;&nbsp;&nbsp;&nbsp;This will rollback blocks within the past hour
