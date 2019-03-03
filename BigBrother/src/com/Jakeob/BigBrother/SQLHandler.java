@@ -18,31 +18,40 @@ public class SQLHandler {
 	private String password;
 	private String database;
 	
+	private BigBrother plugin;
 	private SQLSender sqls;
 	private Connection connection;
 	
-	public SQLHandler(String host, String port, String user, String password, String database) {
+	private boolean couldConnect;
+	
+	public SQLHandler(String host, String port, String user, String password, String database, BigBrother plugin) {
 		this.host = host;
 		this.port = port;
 		this.user = user;
 		this.password = password;
 		this.database = database;
 		
-		connect();
-		sqls = new SQLSender(this.connection);
-		Thread queryThread = new Thread(sqls);
-		queryThread.start();
+		this.plugin = plugin;
+		couldConnect = connect();
+		if(couldConnect) {
+			sqls = new SQLSender(this.connection);
+			Thread queryThread = new Thread(sqls);
+			queryThread.start();
+		}
 	}
 	
-	private void connect() {
+	private boolean connect() {
 		try {
 			this.connection = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, user, password);
 			Statement statement = this.connection.createStatement();
 			String createTable = "CREATE TABLE IF NOT EXISTS `BBLog` (`Player` VARCHAR(50), `Time` DATETIME, `Event` VARCHAR(50), `BlockType` VARCHAR(50), `World` VARCHAR(50), `X` INT, `Y` INT, `Z` INT)";
 			statement.execute(createTable);
 			BigBrother.logger.info("Connected to database!");
+			return true;
 		} catch (Exception e) {
 			BigBrother.logger.warning("Couldn't connect to database, make sure Big Brother config is correct!");
+			plugin.manuallyDisable();
+			return false;
 		}
 	}
 	
@@ -106,5 +115,9 @@ public class SQLHandler {
 		} catch (SQLException e) {
 			return false;
 		}
+	}
+	
+	public boolean couldInitConnect() {
+		return this.couldConnect;
 	}
 }

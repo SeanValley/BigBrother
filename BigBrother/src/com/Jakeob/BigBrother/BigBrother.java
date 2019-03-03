@@ -12,13 +12,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  * Big Brother by Sean Valley
  * Email: valleydsean@gmail.com
  * Github: github.com/SeanValley
- * 
- * TODO:
- * Add pages to scroll through ResultSets
- * fix SQL problem with negative numbers
- * 
- * Clean up CommandParser class
- * Allow plugin to hook into WorldEdit for extra control
  */
 
 public class BigBrother extends JavaPlugin{
@@ -38,14 +31,22 @@ public class BigBrother extends JavaPlugin{
 		String password = this.getConfig().getString("MySQL.Password");
 		String database = this.getConfig().getString("MySQL.Database");
 		
-		SQLHandler sqlh = new SQLHandler(host, port, user, password, database);
-		
-		pm.registerEvents(new BlockListener(sqlh), this);
-		pm.registerEvents(new PlayerListener(), this);
-		
-		this.cHandler = new CommandHandler(this, sqlh);
-		
-		this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
+		if(host.equals("0.0.0.0")) {
+			BigBrother.logger.warning("Please configure your database information");
+			BigBrother.logger.warning("Shutting down BigBrother...");
+			this.setEnabled(false);
+		}else {
+			SQLHandler sqlh = new SQLHandler(host, port, user, password, database, this);
+			
+			if(sqlh.couldInitConnect()) {
+				pm.registerEvents(new BlockListener(sqlh), this);
+				pm.registerEvents(new PlayerListener(), this);
+				
+				this.cHandler = new CommandHandler(this, sqlh);
+				
+				this.getServer().getLogger().info("BigBrother 1.0 has been enabled!");
+			}
+		}
 	}
 	
 	public void onDisable() {
@@ -53,10 +54,19 @@ public class BigBrother extends JavaPlugin{
 	}
 	
 	public void loadConfiguration() {
-		this.getConfig().options().header("###############################################\nBig Brother\nFor Bukkit Build 1.13.2 R0.1\nBy: Sean Valley\n###############################################\n");
+		this.getConfig().options().header(
+				  "###############################################\n"
+				+ "Big Brother 1.0\n"
+				+ "For Bukkit Build 1.13.2\n"
+				+ "By: Sean Valley (jakeob22)\n"
+				+ "###############################################\n");
 	    
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();
+	}
+	
+	public void manuallyDisable() {
+		this.setEnabled(false);
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
