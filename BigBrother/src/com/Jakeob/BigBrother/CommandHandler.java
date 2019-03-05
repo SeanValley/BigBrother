@@ -259,8 +259,6 @@ public class CommandHandler {
 				String name = player.getName();
 				ArrayList<Rollback> playerRBs = rollbacks.get(name);
 				if(playerRBs != null) {
-					BigBrother.logger.info("Had rollbacks to make");
-					BigBrother.logger.info("rollback list size: " + rollbacks.get(name).size());
 					int rbsSize = playerRBs.size();
 					Rollback recentRB = playerRBs.get(rbsSize - 1);
 					for(Action action : recentRB.getAllActions()) {
