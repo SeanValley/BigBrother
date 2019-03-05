@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
@@ -110,5 +111,16 @@ public class BlockListener implements Listener{
 			
 			sqlh.addEntry(SQLHandler.getInsertStatement("EXPLOSION", "removed", type, loc));
 		}
+	}
+	
+	//Handles logging blocks that have been burned
+	@EventHandler
+	public void onBlockBurned(BlockBurnEvent event) {
+		Block block = event.getBlock();
+		
+		Material type = block.getType();
+		Location loc = block.getLocation();
+		
+		sqlh.addEntry(SQLHandler.getInsertStatement("FIRE", "removed", type, loc));
 	}
 }
