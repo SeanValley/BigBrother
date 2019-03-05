@@ -163,7 +163,6 @@ public class CommandParser {
 					
 					String checkDate = new SimpleDateFormat("yyyy-MM-").format(date) + sqlDay + " " + sqlHour + ":" + sqlMin + ":" + sqlSec;
 					conditionArray.add("Time >= '" + checkDate + "'");
-					BigBrother.logger.info("Time >= '" + checkDate + "'");
 				}else {
 					return null;
 				}
