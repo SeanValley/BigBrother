@@ -260,32 +260,40 @@ public class CommandHandler {
 				ArrayList<Rollback> playerRBs = rollbacks.get(name);
 				if(playerRBs != null) {
 					int rbsSize = playerRBs.size();
-					Rollback recentRB = playerRBs.get(rbsSize - 1);
-					for(Action action : recentRB.getAllActions()) {
-						String playerName = action.getPlayerName();
-						String time = action.getTime();
-						String blockType = action.getBlockType();
-						String world = action.getWorld();
-						int x = action.getX();
-						int y = action.getY();
-						int z = action.getZ();
-						
-						String event = "placed";
-						if(action.wasRemoved()) {
-							event = "removed";
-							CommandHelper.removeBlock(new Location(plugin.getServer().getWorld(world), x, y, z));
-						}else {
-							CommandHelper.placeBlock(new Location(plugin.getServer().getWorld(world), x, y, z), Material.getMaterial(blockType));
+					if(rbsSize != 0) {
+						Rollback recentRB = playerRBs.get(rbsSize - 1);
+						int amount = 0;
+						for(Action action : recentRB.getAllActions()) {
+							amount++;
+							String playerName = action.getPlayerName();
+							String time = action.getTime();
+							String blockType = action.getBlockType();
+							String world = action.getWorld();
+							int x = action.getX();
+							int y = action.getY();
+							int z = action.getZ();
+							
+							String event = "placed";
+							if(action.wasRemoved()) {
+								event = "removed";
+								CommandHelper.removeBlock(new Location(plugin.getServer().getWorld(world), x, y, z));
+							}else {
+								CommandHelper.placeBlock(new Location(plugin.getServer().getWorld(world), x, y, z), Material.getMaterial(blockType));
+							}
+							
+							String entry = SQLHandler.getInsertStatement(playerName, time, event, blockType, world, x, y, z);
+							sqlh.addEntry(entry);
 						}
 						
-						String entry = SQLHandler.getInsertStatement(playerName, time, event, blockType, world, x, y, z);
-						sqlh.addEntry(entry);
+						@SuppressWarnings("unchecked")
+						ArrayList<Rollback> playerRollbacks = (ArrayList<Rollback>) rollbacks.get(name).clone();
+						playerRollbacks.remove(playerRollbacks.size() - 1);
+						rollbacks.put(name, playerRollbacks);
+						
+						player.sendMessage(ChatColor.GREEN + "Undid " + amount + " actions!");
+					}else {
+						player.sendMessage(ChatColor.RED + "No rollbacks to undo");
 					}
-					
-					@SuppressWarnings("unchecked")
-					ArrayList<Rollback> playerRollbacks = (ArrayList<Rollback>) rollbacks.get(name).clone();
-					playerRollbacks.remove(playerRollbacks.size() - 1);
-					rollbacks.put(name, playerRollbacks);
 				}else {
 					player.sendMessage(ChatColor.RED + "No rollbacks to undo");
 				}
